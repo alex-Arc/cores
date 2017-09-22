@@ -108,6 +108,7 @@
 #elif F_BUS == 60000000
 #define HAS_SPIFIFO
 #define SPI_CLOCK_MAX     (SPI_CTAR_PBR(0) | SPI_CTAR_BR(0) | SPI_CTAR_DBR) //
+#define SPI_CLOCK_30MHz     (SPI_CTAR_PBR(0) | SPI_CTAR_BR(0) | SPI_CTAR_DBR) //
 #define SPI_CLOCK_24MHz   (SPI_CTAR_PBR(1) | SPI_CTAR_BR(0) | SPI_CTAR_DBR) //(60 / 3) * ((1+1)/2) = 20 MHz
 #define SPI_CLOCK_16MHz   (SPI_CTAR_PBR(0) | SPI_CTAR_BR(0))                //(60 / 2) * ((1+0)/2) = 15 MHz
 #define SPI_CLOCK_12MHz   (SPI_CTAR_PBR(2) | SPI_CTAR_BR(0) | SPI_CTAR_DBR) //(60 / 5) * ((1+1)/2)
@@ -346,6 +347,87 @@ private:
 	static volatile uint8_t *reg;
 };
 extern SPIFIFOclass SPIFIFO;
+
+#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
+class SPI1FIFOclass
+{
+public:
+	inline void begin(uint8_t pin, uint32_t speed, uint32_t mode=SPI_MODE0) __attribute__((always_inline)) {
+		uint32_t p, ctar = speed;
+		SIM_SCGC6 |= SIM_SCGC6_SPI1;
+
+		KINETISK_SPI1.MCR = SPI_MCR_MSTR | SPI_MCR_MDIS | SPI_MCR_HALT | SPI_MCR_PCSIS(0x1F);
+		if (mode & 0x08) ctar |= SPI_CTAR_CPOL;
+		if (mode & 0x04) {
+			ctar |= SPI_CTAR_CPHA;
+			ctar |= (ctar & 0x0F) << 8;
+		} else {
+			ctar |= (ctar & 0x0F) << 12;
+		}
+		KINETISK_SPI1.CTAR0 = ctar | SPI_CTAR_FMSZ(7);
+		KINETISK_SPI1.CTAR1 = ctar | SPI_CTAR_FMSZ(15);
+		if (pin == 31) {         // PTB10
+			CORE_PIN31_CONFIG = PORT_PCR_MUX(2);
+			p = 0x01;
+		} else {
+			reg = portOutputRegister(pin);
+			pinMode(pin, OUTPUT);
+			*reg = 1;
+			p = 0;
+		}
+		pcs = p;
+		clear();
+		SPCR1.enable_pins();
+	}
+	inline void write(uint32_t b, uint32_t cont=0) __attribute__((always_inline)) {
+		uint32_t pcsbits = pcs << 16;
+		if (pcsbits) {
+			KINETISK_SPI1.PUSHR = (b & 0xFF) | pcsbits | (cont ? SPI_PUSHR_CONT : 0);
+			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ; // wait if FIFO full
+		} else {
+			*reg = 0;
+			KINETISK_SPI1.SR = SPI_SR_EOQF;
+			KINETISK_SPI1.PUSHR = (b & 0xFF) | (cont ? 0 : SPI_PUSHR_EOQ);
+			if (cont) {
+				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+			} else {
+				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
+				*reg = 1;
+			}
+		}
+	}
+	inline void write16(uint32_t b, uint32_t cont=0) __attribute__((always_inline)) {
+		uint32_t pcsbits = pcs << 16;
+		if (pcsbits) {
+			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (pcs << 16) |
+				(cont ? SPI_PUSHR_CONT : 0) | SPI_PUSHR_CTAS(1);
+			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+		} else {
+			*reg = 0;
+			KINETISK_SPI1.SR = SPI_SR_EOQF;
+			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (cont ? 0 : SPI_PUSHR_EOQ) | SPI_PUSHR_CTAS(1);
+			if (cont) {
+				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+			} else {
+				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
+				*reg = 1;
+			}
+		}
+	}
+	inline uint32_t read(void) __attribute__((always_inline)) {
+		while ((KINETISK_SPI1.SR & (15 << 4)) == 0) ;  // TODO, could wait forever
+		return KINETISK_SPI1.POPR;
+	}
+	inline void clear(void) __attribute__((always_inline)) {
+		KINETISK_SPI1.MCR = SPI_MCR_MSTR | SPI_MCR_PCSIS(0x1F) | SPI_MCR_CLR_TXF | SPI_MCR_CLR_RXF;
+	}
+private:
+	static uint8_t pcs;
+	static volatile uint8_t *reg;
+};
+extern SPI1FIFOclass SPI1FIFO;
+
+#endif //#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
 
 #endif // HAS_SPIFIFO
 
