@@ -49,6 +49,9 @@ SPCR2emulation SPCR2;
 uint8_t SPIFIFOclass::pcs = 0;
 volatile uint8_t * SPIFIFOclass::reg = 0;
 
+#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
+uint8_t SPIFIFO1class::pcs1 = 0;
+volatile uint8_t * SPIFIFO1class::reg1 = 0;
 #endif
 
-
+#endif
