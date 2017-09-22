@@ -425,7 +425,7 @@ private:
 	static uint8_t pcs;
 	static volatile uint8_t *reg;
 };
-extern SPIFIFO1class SPI1FIFO;
+extern SPIFIFO1class SPIFIFO1;
 
 #endif //#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
 
