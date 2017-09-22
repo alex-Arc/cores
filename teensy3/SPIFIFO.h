@@ -349,7 +349,7 @@ private:
 extern SPIFIFOclass SPIFIFO;
 
 #if defined(__MK64FX512__) || defined(__MK66FX1M0__)
-class SPI1FIFOclass
+class SPIFIFO1class
 {
 public:
 	inline void begin(uint8_t pin, uint32_t speed, uint32_t mode=SPI_MODE0) __attribute__((always_inline)) {
@@ -425,7 +425,7 @@ private:
 	static uint8_t pcs;
 	static volatile uint8_t *reg;
 };
-extern SPI1FIFOclass SPI1FIFO;
+extern SPIFIFO1class SPI1FIFO;
 
 #endif //#if defined(__MK64FX512__) || defined(__MK66FX1M0__)
 
