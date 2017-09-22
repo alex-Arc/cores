@@ -370,47 +370,47 @@ public:
 			CORE_PIN31_CONFIG = PORT_PCR_MUX(2);
 			p = 0x01;
 		} else {
-			reg = portOutputRegister(pin);
+			reg1 = portOutputRegister(pin);
 			pinMode(pin, OUTPUT);
-			*reg = 1;
+			*reg1 = 1;
 			p = 0;
 		}
-		pcs = p;
+		pcs1 = p;
 		clear();
 		SPCR1.enable_pins();
 	}
 	inline void write(uint32_t b, uint32_t cont=0) __attribute__((always_inline)) {
-		uint32_t pcsbits = pcs << 16;
+		uint32_t pcsbits = pcs1 << 16;
 		if (pcsbits) {
 			KINETISK_SPI1.PUSHR = (b & 0xFF) | pcsbits | (cont ? SPI_PUSHR_CONT : 0);
 			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ; // wait if FIFO full
 		} else {
-			*reg = 0;
+			*reg1 = 0;
 			KINETISK_SPI1.SR = SPI_SR_EOQF;
 			KINETISK_SPI1.PUSHR = (b & 0xFF) | (cont ? 0 : SPI_PUSHR_EOQ);
 			if (cont) {
 				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
 			} else {
 				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
-				*reg = 1;
+				*reg1 = 1;
 			}
 		}
 	}
 	inline void write16(uint32_t b, uint32_t cont=0) __attribute__((always_inline)) {
-		uint32_t pcsbits = pcs << 16;
+		uint32_t pcsbits = pcs1 << 16;
 		if (pcsbits) {
-			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (pcs << 16) |
+			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (pcs1 << 16) |
 				(cont ? SPI_PUSHR_CONT : 0) | SPI_PUSHR_CTAS(1);
 			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
 		} else {
-			*reg = 0;
+			*reg1 = 0;
 			KINETISK_SPI1.SR = SPI_SR_EOQF;
 			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (cont ? 0 : SPI_PUSHR_EOQ) | SPI_PUSHR_CTAS(1);
 			if (cont) {
 				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
 			} else {
 				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
-				*reg = 1;
+				*reg1 = 1;
 			}
 		}
 	}
