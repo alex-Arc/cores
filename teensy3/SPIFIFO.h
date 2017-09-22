@@ -391,7 +391,14 @@ public:
 			if (cont) {
 				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
 			} else {
-				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
+				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)){
+          //------------------------------------
+          digitalWrite(13,HIGH);
+          delay(200);
+          digitalWrite(13,LOW);
+          delay(200);
+          //------------------------------------
+        }
 				*reg1 = 1;
 			}
 		}
