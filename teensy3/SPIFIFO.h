@@ -422,8 +422,8 @@ public:
 		KINETISK_SPI1.MCR = SPI_MCR_MSTR | SPI_MCR_PCSIS(0x1F) | SPI_MCR_CLR_TXF | SPI_MCR_CLR_RXF;
 	}
 private:
-	static uint8_t pcs;
-	static volatile uint8_t *reg;
+	static uint8_t pcs1;
+	static volatile uint8_t *reg1;
 };
 extern SPIFIFO1class SPIFIFO1;
 
