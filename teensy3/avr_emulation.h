@@ -2033,7 +2033,8 @@ public:
 		if (pin == 5) pinout |= 2;  // MISO1 = 5  (PTD7)
 	}
 	inline void setSCK(uint8_t pin) __attribute__((always_inline)) {
-		// SCK1 = 20 (PTD5) - no alternative pin
+    if (pin == 20) pinout &= ~4; // SCK1 = 20 (PTD5)
+		if (pin == 32) pinout |= 4;  // SCK1 = 32  (PTB11)
 	}
 	inline void enable_pins(void) __attribute__((always_inline)) {
 		//serial_print("enable_pins\n");
@@ -2047,7 +2048,12 @@ public:
 		} else {
 			CORE_PIN5_CONFIG = PORT_PCR_MUX(2);  // MISO1 = 5  (PTD7)
 		}
-		CORE_PIN20_CONFIG = PORT_PCR_MUX(2); // SCK1 = 20 (PTD5)
+    if ((pinout & 4) == 0) {
+			CORE_PIN20_CONFIG = PORT_PCR_MUX(2); // SCK1 = 20 (PTD5)
+		} else {
+			CORE_PIN32_CONFIG = PORT_PCR_MUX(2); // SCK1 = 32 (PTDB11)
+		}
+
 	}
 	inline void disable_pins(void) __attribute__((always_inline)) {
 		//serial_print("disable_pins\n");
