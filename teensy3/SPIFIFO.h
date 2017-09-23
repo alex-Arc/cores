@@ -383,22 +383,15 @@ public:
 		uint32_t pcsbits = pcs1 << 16;
 		if (pcsbits) {
 			KINETISK_SPI1.PUSHR = (b & 0xFF) | pcsbits | (cont ? SPI_PUSHR_CONT : 0);
-			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ; // wait if FIFO full
+			while (((KINETISK_SPI1.SR) & (15 << 12)) > ((1-1) << 12)) ; // wait if FIFO full
 		} else {
 			*reg1 = 0;
 			KINETISK_SPI1.SR = SPI_SR_EOQF;
 			KINETISK_SPI1.PUSHR = (b & 0xFF) | (cont ? 0 : SPI_PUSHR_EOQ);
 			if (cont) {
-				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+				while (((KINETISK_SPI1.SR) & (15 << 12)) > ((1-1) << 12)) ;
 			} else {
-				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)){
-          //------------------------------------
-          digitalWrite(13,HIGH);
-          delay(200);
-          digitalWrite(13,LOW);
-          delay(200);
-          //------------------------------------
-        }
+				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
 				*reg1 = 1;
 			}
 		}
@@ -408,13 +401,13 @@ public:
 		if (pcsbits) {
 			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (pcs1 << 16) |
 				(cont ? SPI_PUSHR_CONT : 0) | SPI_PUSHR_CTAS(1);
-			while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+			while (((KINETISK_SPI1.SR) & (15 << 12)) > ((1-1) << 12)) ;
 		} else {
 			*reg1 = 0;
 			KINETISK_SPI1.SR = SPI_SR_EOQF;
 			KINETISK_SPI1.PUSHR = (b & 0xFFFF) | (cont ? 0 : SPI_PUSHR_EOQ) | SPI_PUSHR_CTAS(1);
 			if (cont) {
-				while (((KINETISK_SPI1.SR) & (15 << 12)) > (3 << 12)) ;
+				while (((KINETISK_SPI1.SR) & (15 << 12)) > ((1-1) << 12)) ;
 			} else {
 				while (!(KINETISK_SPI1.SR & SPI_SR_EOQF)) ;
 				*reg1 = 1;
