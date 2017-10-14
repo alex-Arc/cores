@@ -765,32 +765,32 @@ enum IRQ_NUMBER_t {
 #if (F_CPU == 240000000)
  #define F_PLL 240000000
  #ifndef F_BUS
- #define F_BUS 60000000
- //#define F_BUS 80000000   // uncomment these to try peripheral overclocking
- //#define F_BUS 120000000  // all the usual overclocking caveats apply...
+ // #define F_BUS 60000000
+ // #define F_BUS 80000000   // uncomment these to try peripheral overclocking
+ #define F_BUS 120000000  // all the usual overclocking caveats apply...
  #endif
  #define F_MEM 30000000
 #elif (F_CPU == 216000000)
  #define F_PLL 216000000
  #ifndef F_BUS
  #define F_BUS 54000000
- //#define F_BUS 72000000
- //#define F_BUS 108000000
+ // #define F_BUS 72000000
+ // #define F_BUS 108000000
  #endif
  #define F_MEM 27000000
 #elif (F_CPU == 192000000)
  #define F_PLL 192000000
  #ifndef F_BUS
  #define F_BUS 48000000
- //#define F_BUS 64000000
- //#define F_BUS 96000000
+ // #define F_BUS 64000000
+ // #define F_BUS 96000000
  #endif
  #define F_MEM 27428571
 #elif (F_CPU == 180000000)
  #define F_PLL 180000000
  #ifndef F_BUS
  #define F_BUS 60000000
- //#define F_BUS 90000000
+ // #define F_BUS 90000000
  #endif
  #define F_MEM 25714286
 #elif (F_CPU == 168000000)
@@ -3936,7 +3936,7 @@ typedef struct {
 #define USB_CLK_RECOVER_CTRL_CLOCK_RECOVER_EN		((uint8_t)0x80)
 #define USB_CLK_RECOVER_CTRL_RESET_RESUME_ROUGH_EN	((uint8_t)0x40)
 #define USB_CLK_RECOVER_CTRL_RESTART_IFRTRIM_EN		((uint8_t)0x20)
-#define USB0_CLK_RECOVER_IRC_EN	(*(volatile uint8_t  *)0x40072144) // IRC48M oscillator enable 
+#define USB0_CLK_RECOVER_IRC_EN	(*(volatile uint8_t  *)0x40072144) // IRC48M oscillator enable
 #define USB_CLK_RECOVER_IRC_EN_IRC_EN			((uint8_t)0x02)
 #define USB_CLK_RECOVER_IRC_EN_REG_EN			((uint8_t)0x01)
 #define USB0_CLK_RECOVER_INT_EN	(*(volatile uint8_t  *)0x40072154) // Clock recovery combined interrupt enable
@@ -5317,7 +5317,7 @@ typedef struct __attribute__((packed)) {
 #define LPUART_BAUD_TDMAE		((uint32_t)0x00800000)		// Transmitter Dma Enable
 #define LPUART_BAUD_RDMAE		((uint32_t)0x00400000)		// Receiver Dma Enable
 #define LPUART_BAUD_BOTHEDGE	((uint32_t)0x00020000)		// Both edge sampling needed OSR 4-7
-#define LPUART_BAUD_SBNS		((uint32_t)0x00002000)		// UART Stop Bit Number Select 
+#define LPUART_BAUD_SBNS		((uint32_t)0x00002000)		// UART Stop Bit Number Select
 #define LPUART_BAUD_SBR(n)		((uint32_t)((n) & 0x1fff) << 0) // set baud rate divisor
 
 #define LPUART0_STAT		(KINETISK_LPUART0.STAT)		// LPUART Status register
