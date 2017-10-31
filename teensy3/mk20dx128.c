@@ -145,7 +145,7 @@ void usage_fault_isr(void)	__attribute__ ((weak, alias("fault_isr")));
 void svcall_isr(void)		__attribute__ ((weak, alias("unused_isr")));
 void debugmonitor_isr(void)	__attribute__ ((weak, alias("unused_isr")));
 void pendablesrvreq_isr(void)	__attribute__ ((weak, alias("unused_isr")));
-void systick_isr(void)		__attribute__ ((weak, alias("unused_isr")));
+void systick_isr(void);
 
 void dma_ch0_isr(void)		__attribute__ ((weak, alias("unused_isr")));
 void dma_ch1_isr(void)		__attribute__ ((weak, alias("unused_isr")));
@@ -1219,6 +1219,12 @@ __attribute__((weak))
 void __cxa_guard_release(char *g)
 {
 	*g = 1;
+}
+
+__attribute__((weak))
+void abort(void)
+{
+	while (1) ;
 }
 
 #pragma GCC diagnostic pop
